@@ -72,6 +72,7 @@
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="2*" />
+                <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="3*" />
             </Grid.ColumnDefinitions>
 
@@ -101,7 +102,17 @@
                 </TreeView>
             </Border>
 
-            <TabControl Grid.Column="1">
+            <GridSplitter
+                Grid.Column="1"
+                Background="Transparent"
+                HorizontalAlignment="Stretch"
+                Margin="2,0"
+                ResizeBehavior="PreviousAndNext"
+                ResizeDirection="Columns"
+                ShowsPreview="True"
+                Width="6" />
+
+            <TabControl Grid.Column="2">
                 <TabItem Header="Property Editor">
                     <Grid Margin="8" RowDefinitions="Auto,Auto,Auto,Auto,*">
                         <Grid.Resources>
