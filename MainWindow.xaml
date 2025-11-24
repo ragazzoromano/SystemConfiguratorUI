@@ -121,7 +121,7 @@
                         <TextBox
                             Grid.Column="1"
                             IsReadOnly="True"
-                            Text="{Binding SelectedNode.Name, Mode=OneWay}" />
+                            Text="{Binding SelectedNode.Name}" />
 
                         <TextBlock
                             Grid.Row="1"
@@ -156,7 +156,7 @@
                                     </Style>
                                 </TextBox.Style>
                             </TextBox>
-                            <CheckBox Content="True/False" IsChecked="{Binding SelectedNode.BooleanValue, Mode=TwoWay}">
+                            <CheckBox Content="True/False" IsChecked="{Binding SelectedNode.BooleanValue}">
                                 <CheckBox.Style>
                                     <Style TargetType="CheckBox">
                                         <Setter Property="Visibility" Value="Collapsed" />
