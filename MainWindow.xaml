@@ -55,6 +55,11 @@
                     VerticalAlignment="Center"
                     Text="{Binding SearchStatus}" />
                 <Separator />
+                <Button Command="{Binding ExpandAllCommand}" Content="Expand All" />
+                <Button Margin="2,0,0,0" Command="{Binding CollapseAllCommand}" Content="Collapse All" />
+                <Button Margin="8,0,0,0" Command="{Binding ExpandChildrenCommand}" Content="Expand Children" />
+                <Button Margin="2,0,0,0" Command="{Binding CollapseChildrenCommand}" Content="Collapse Children" />
+                <Separator />
                 <TextBlock
                     Margin="6,0,4,0"
                     VerticalAlignment="Center"

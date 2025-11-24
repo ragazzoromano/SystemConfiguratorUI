@@ -107,6 +107,10 @@ public partial class MainViewModel : ObservableObject
     public ICommand FindPreviousCommand { get; }
     public ICommand ReplaceCommand { get; }
     public ICommand ReplaceAllCommand { get; }
+    public ICommand ExpandAllCommand { get; }
+    public ICommand CollapseAllCommand { get; }
+    public ICommand ExpandChildrenCommand { get; }
+    public ICommand CollapseChildrenCommand { get; }
 
     public MainViewModel()
     {
@@ -120,6 +124,10 @@ public partial class MainViewModel : ObservableObject
         FindPreviousCommand = new RelayCommand(FindPrevious);
         ReplaceCommand = new RelayCommand(ReplaceCurrent);
         ReplaceAllCommand = new RelayCommand(ReplaceAll);
+        ExpandAllCommand = new RelayCommand(ExpandAllNodes);
+        CollapseAllCommand = new RelayCommand(CollapseAllNodes);
+        ExpandChildrenCommand = new RelayCommand(ExpandChildren);
+        CollapseChildrenCommand = new RelayCommand(CollapseChildren);
 
         LoadInitialDocument();
     }
@@ -448,6 +456,49 @@ public partial class MainViewModel : ObservableObject
         if (changed)
         {
             HandleNodeUpdated();
+        }
+    }
+
+    private void ExpandAllNodes()
+    {
+        foreach (var node in RootNodes.SelectMany(n => n.Flatten()))
+        {
+            node.IsExpanded = true;
+        }
+    }
+
+    private void CollapseAllNodes()
+    {
+        foreach (var node in RootNodes.SelectMany(n => n.Flatten()))
+        {
+            node.IsExpanded = false;
+        }
+    }
+
+    private void ExpandChildren()
+    {
+        if (SelectedNode == null)
+        {
+            return;
+        }
+
+        SelectedNode.IsExpanded = true;
+        foreach (var child in SelectedNode.Children.SelectMany(c => c.Flatten()))
+        {
+            child.IsExpanded = true;
+        }
+    }
+
+    private void CollapseChildren()
+    {
+        if (SelectedNode == null)
+        {
+            return;
+        }
+
+        foreach (var child in SelectedNode.Children.SelectMany(c => c.Flatten()))
+        {
+            child.IsExpanded = false;
         }
     }
 }
