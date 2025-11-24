@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Text;
 using CommunityToolkit.Mvvm.ComponentModel;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace SystemConfiguratorUI.ViewModels;
