@@ -15,12 +15,15 @@ public class JsonTreeNodeViewModel : ObservableObject
         Token = token;
         Parent = parent;
         Children = new ObservableCollection<JsonTreeNodeViewModel>();
+        RowNumber = ExtractLineNumber(token);
     }
 
     public string Name { get; }
     public JToken Token { get; }
     public JsonTreeNodeViewModel? Parent { get; }
     public ObservableCollection<JsonTreeNodeViewModel> Children { get; set; }
+
+    public int? RowNumber { get; }
 
     private bool _isExpanded;
     public bool IsExpanded
@@ -185,5 +188,15 @@ public class JsonTreeNodeViewModel : ObservableObject
 
         builder.Append(source, currentIndex, source.Length - currentIndex);
         return builder.ToString();
+    }
+
+    private static int? ExtractLineNumber(JToken token)
+    {
+        if (token is IJsonLineInfo lineInfo && lineInfo.HasLineInfo() && lineInfo.LineNumber > 0)
+        {
+            return lineInfo.LineNumber;
+        }
+
+        return null;
     }
 }
