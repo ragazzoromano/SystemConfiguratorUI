@@ -161,10 +161,17 @@
                             Text="Value:" />
                         <StackPanel
                             Grid.Row="3"
-                            Grid.Column="1"                            
-                            VerticalAlignment="Center"
-                            Orientation="Horizontal">
-                            <TextBox Text="{Binding SelectedNode.EditableValue, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}">
+                            Grid.Column="1"
+                            Orientation="Vertical">
+                            <TextBox
+                                AcceptsReturn="True"
+                                AcceptsTab="True"
+                                FontFamily="Consolas"
+                                HorizontalScrollBarVisibility="Auto"
+                                MinHeight="120"
+                                Text="{Binding SelectedNode.EditableValue, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+                                TextWrapping="NoWrap"
+                                VerticalScrollBarVisibility="Auto">
                                 <TextBox.Style>
                                     <Style TargetType="TextBox">
                                         <Setter Property="Visibility" Value="Visible" />
