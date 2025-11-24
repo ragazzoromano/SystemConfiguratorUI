@@ -30,15 +30,20 @@ public partial class MainViewModel : ObservableObject
         get => _selectedNode;
         set
         {
-            if (_selectedNode != null)
-            {
-                _selectedNode.IsSelected = false;
-            }
+            var previous = _selectedNode;
 
-            if (SetProperty(ref _selectedNode, value) && _selectedNode != null)
+            if (SetProperty(ref _selectedNode, value))
             {
-                _selectedNode.IsSelected = true;
-                ExpandAncestors(_selectedNode);
+                if (previous != null && !ReferenceEquals(previous, _selectedNode))
+                {
+                    previous.IsSelected = false;
+                }
+
+                if (_selectedNode != null)
+                {
+                    _selectedNode.IsSelected = true;
+                    ExpandAncestors(_selectedNode);
+                }
             }
         }
     }
