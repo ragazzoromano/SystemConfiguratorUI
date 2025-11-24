@@ -187,6 +187,7 @@
                         <TextBlock
                             Grid.Row="3"
                             Grid.Column="1"
+                            VerticalAlignment="Center"
                             Text="{Binding SelectedNode.IsPrimitive, Mode=OneWay}" />
                     </Grid>
                 </TabItem>
