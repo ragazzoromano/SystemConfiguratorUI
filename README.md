@@ -1,6 +1,6 @@
 # SystemConfiguratorUI
 
-A WPF desktop JSON editor focused on navigating and editing large `configuration.json` files. The app is built on .NET 6 with the MVVM pattern, featuring:
+A WPF desktop JSON editor focused on navigating and editing large `configuration.json` files. The app is built on .NET 10 with the MVVM pattern, featuring:
 
 - Tree-based navigation of objects and arrays.
 - Property editing for primitive values with live synchronization to the raw JSON text.
