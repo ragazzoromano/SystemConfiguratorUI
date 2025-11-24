@@ -91,7 +91,7 @@
                         <TextBox Grid.Column="1" Text="{Binding SelectedNode.Name, Mode=OneWay}" IsReadOnly="True" />
 
                         <TextBlock Grid.Row="1" Text="Type:" FontWeight="SemiBold" Margin="0,0,6,0" />
-                        <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding SelectedNode.NodeType}" IsReadOnly="True" />
+                        <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding SelectedNode.NodeType, Mode=OneWay}" IsReadOnly="True" />
 
                         <TextBlock Grid.Row="2" Text="Value:" FontWeight="SemiBold" Margin="0,0,6,0" />
                         <StackPanel Grid.Row="2" Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
