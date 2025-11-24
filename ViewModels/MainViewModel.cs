@@ -135,8 +135,8 @@ public partial class MainViewModel : ObservableObject
     private void LoadInitialDocument()
     {
         RawJsonText = _jsonRoot.ToString(Formatting.Indented);
-        RebuildTree();
         MarkUnsaved(false);
+        RebuildTreeWithLineInfo();
     }
 
     private void OpenFile()
@@ -156,10 +156,11 @@ public partial class MainViewModel : ObservableObject
             try
             {
                 var text = File.ReadAllText(dialog.FileName);
-                var parsed = JToken.Parse(text);
-                _jsonRoot = parsed;
+                var parsed = ParseJsonWithLineInfo(text);
+                var formatted = parsed.ToString(Formatting.Indented);
+                _jsonRoot = ParseJsonWithLineInfo(formatted);
                 _currentFilePath = dialog.FileName;
-                RawJsonText = parsed.ToString(Formatting.Indented);
+                RawJsonText = formatted;
                 RebuildTree();
                 MarkUnsaved(false);
             }
@@ -235,9 +236,9 @@ public partial class MainViewModel : ObservableObject
     {
         try
         {
-            var parsed = JToken.Parse(RawJsonText);
-            RawJsonText = parsed.ToString(Formatting.Indented);
-            _jsonRoot = parsed;
+            var formatted = ParseJsonWithLineInfo(RawJsonText).ToString(Formatting.Indented);
+            RawJsonText = formatted;
+            _jsonRoot = ParseJsonWithLineInfo(formatted);
             RebuildTree();
             MarkUnsaved(true);
         }
@@ -251,9 +252,10 @@ public partial class MainViewModel : ObservableObject
     {
         try
         {
-            var parsed = JToken.Parse(RawJsonText);
-            _jsonRoot = parsed;
-            RawJsonText = parsed.ToString(Formatting.Indented);
+            var parsed = ParseJsonWithLineInfo(RawJsonText);
+            var formatted = parsed.ToString(Formatting.Indented);
+            RawJsonText = formatted;
+            _jsonRoot = ParseJsonWithLineInfo(formatted);
             RebuildTree();
             MarkUnsaved(true);
             MessageBox.Show("JSON is valid.", "Validation", MessageBoxButton.OK, MessageBoxImage.Information);
@@ -279,6 +281,12 @@ public partial class MainViewModel : ObservableObject
 
         RecalculateSearchMatches();
         OnPropertyChanged(nameof(WindowTitle));
+    }
+
+    private void RebuildTreeWithLineInfo()
+    {
+        _jsonRoot = ParseJsonWithLineInfo(RawJsonText);
+        RebuildTree();
     }
 
     private IEnumerable<JsonTreeNodeViewModel> BuildNodes(JToken token, JsonTreeNodeViewModel? parent)
@@ -339,6 +347,14 @@ public partial class MainViewModel : ObservableObject
     {
         _hasUnsavedChanges = value;
         OnPropertyChanged(nameof(WindowTitle));
+    }
+
+    private static JToken ParseJsonWithLineInfo(string text)
+    {
+        return JToken.Parse(text, new JsonLoadSettings
+        {
+            LineInfoHandling = LineInfoHandling.Load
+        });
     }
 
     private string BuildWindowTitle()
