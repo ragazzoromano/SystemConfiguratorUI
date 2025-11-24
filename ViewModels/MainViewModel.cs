@@ -337,7 +337,7 @@ public partial class MainViewModel : ObservableObject
     {
         var fileName = string.IsNullOrWhiteSpace(_currentFilePath)
             ? "SystemConfiguratorUI"
-            : $"{Path.GetFileName(_currentFilePath)} - SystemConfiguratorUI";
+            : $"{_currentFilePath} - SystemConfiguratorUI";
 
         if (_hasUnsavedChanges)
         {
