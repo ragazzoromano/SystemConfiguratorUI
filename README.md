@@ -8,6 +8,17 @@ A WPF desktop JSON editor focused on navigating and editing large `configuration
 - Global search plus search-and-replace across property names and string values.
 - File operations for loading and saving formatted JSON.
 
+## Project Intent
+
+SystemConfiguratorUI is intended to streamline work with sprawling configuration files where accuracy and clarity are critical. The UI helps surface nested keys quickly, keeps the visual and raw representations in sync, and provides guardrails (validation and formatting) so teams can reduce mistakes when editing shared JSON assets.
+
+## Notes
+
+- Designed for `.NET 6` on Windows with WPF; ensure the SDK is installed before building.
+- The MVVM structure keeps view logic minimal—new UI behaviors should be added through commands and view models for testability.
+- Validation feedback appears in the raw editor; reformatting JSON can clear minor spacing issues before commits.
+- Large files are best handled by using the tree view for navigation and the search panel for targeted updates instead of manual scrolling.
+
 ### Building
 
 ```
