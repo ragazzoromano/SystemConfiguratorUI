@@ -141,11 +141,6 @@ public partial class MainViewModel : ObservableObject
 
     private void OpenFile()
     {
-        if (!ConfirmDiscardChanges())
-        {
-            return;
-        }
-
         var dialog = new OpenFileDialog
         {
             Filter = "JSON files (*.json)|*.json|All files (*.*)|*.*"
@@ -153,25 +148,35 @@ public partial class MainViewModel : ObservableObject
 
         if (dialog.ShowDialog() == true)
         {
-            try
-            {
-                var text = File.ReadAllText(dialog.FileName);
-                var parsed = ParseJsonWithLineInfo(text);
-                var formatted = parsed.ToString(Formatting.Indented);
-                _jsonRoot = ParseJsonWithLineInfo(formatted);
-                _currentFilePath = dialog.FileName;
-                RawJsonText = formatted;
-                RebuildTree();
-                MarkUnsaved(false);
-            }
-            catch (JsonReaderException ex)
-            {
-                MessageBox.Show($"Could not parse JSON: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-            catch (IOException ex)
-            {
-                MessageBox.Show($"Could not read file: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
+            LoadFileFromPath(dialog.FileName);
+        }
+    }
+
+    public void LoadFileFromPath(string filePath)
+    {
+        if (!ConfirmDiscardChanges())
+        {
+            return;
+        }
+
+        try
+        {
+            var text = File.ReadAllText(filePath);
+            var parsed = ParseJsonWithLineInfo(text);
+            var formatted = parsed.ToString(Formatting.Indented);
+            _jsonRoot = ParseJsonWithLineInfo(formatted);
+            _currentFilePath = filePath;
+            RawJsonText = formatted;
+            RebuildTree();
+            MarkUnsaved(false);
+        }
+        catch (JsonReaderException ex)
+        {
+            MessageBox.Show($"Could not parse JSON: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+        catch (IOException ex)
+        {
+            MessageBox.Show($"Could not read file: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
 
