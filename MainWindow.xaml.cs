@@ -1,5 +1,7 @@
 using System;
 using System.ComponentModel;
+using System.IO;
+using System.Linq;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -102,5 +104,68 @@ public partial class MainWindow : Window
         }
 
         return null;
+    }
+
+    private void Window_DragOver(object sender, DragEventArgs e)
+    {
+        e.Handled = true;
+
+        if (HasJsonFile(e.Data))
+        {
+            e.Effects = DragDropEffects.Copy;
+        }
+        else
+        {
+            e.Effects = DragDropEffects.None;
+        }
+    }
+
+    private void Window_Drop(object sender, DragEventArgs e)
+    {
+        e.Handled = true;
+
+        if (DataContext is not MainViewModel vm)
+        {
+            return;
+        }
+
+        if (TryGetDroppedFile(e.Data, out var filePath))
+        {
+            vm.LoadFileFromPath(filePath);
+        }
+    }
+
+    private static bool HasJsonFile(IDataObject dataObject)
+    {
+        if (dataObject.GetData(DataFormats.FileDrop) is string[] files)
+        {
+            return files.Any(IsJsonFile);
+        }
+
+        return false;
+    }
+
+    private static bool TryGetDroppedFile(IDataObject dataObject, out string filePath)
+    {
+        filePath = string.Empty;
+
+        if (dataObject.GetData(DataFormats.FileDrop) is not string[] files || files.Length == 0)
+        {
+            return false;
+        }
+
+        var jsonFile = files.FirstOrDefault(IsJsonFile);
+        if (string.IsNullOrWhiteSpace(jsonFile))
+        {
+            return false;
+        }
+
+        filePath = jsonFile;
+        return true;
+    }
+
+    private static bool IsJsonFile(string path)
+    {
+        return string.Equals(Path.GetExtension(path), ".json", StringComparison.OrdinalIgnoreCase);
     }
 }

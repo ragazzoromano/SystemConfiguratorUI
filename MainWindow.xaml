@@ -8,6 +8,9 @@
     Title="{Binding WindowTitle}"
     Width="1100"
     Height="720"
+    AllowDrop="True"
+    DragOver="Window_DragOver"
+    Drop="Window_Drop"
     mc:Ignorable="d">
     <Window.DataContext>
         <vm:MainViewModel />
