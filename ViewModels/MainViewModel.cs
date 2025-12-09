@@ -16,6 +16,12 @@ namespace SystemConfiguratorUI.ViewModels;
 
 public partial class MainViewModel : ObservableObject
 {
+    private static readonly string StateDirectory = Path.Combine(
+        Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+        "SystemConfiguratorUI");
+
+    private static readonly string LastFileRecordPath = Path.Combine(StateDirectory, "last-file.txt");
+
     private JToken _jsonRoot = new JObject();
     private string? _currentFilePath;
     private bool _hasUnsavedChanges;
@@ -129,7 +135,10 @@ public partial class MainViewModel : ObservableObject
         ExpandChildrenCommand = new RelayCommand(ExpandChildren);
         CollapseChildrenCommand = new RelayCommand(CollapseChildren);
 
-        LoadInitialDocument();
+        if (!TryLoadLastOpenedFile())
+        {
+            LoadInitialDocument();
+        }
     }
 
     private void LoadInitialDocument()
@@ -152,11 +161,11 @@ public partial class MainViewModel : ObservableObject
         }
     }
 
-    public void LoadFileFromPath(string filePath)
+    public bool LoadFileFromPath(string filePath)
     {
         if (!ConfirmDiscardChanges())
         {
-            return;
+            return false;
         }
 
         try
@@ -169,6 +178,8 @@ public partial class MainViewModel : ObservableObject
             RawJsonText = formatted;
             RebuildTree();
             MarkUnsaved(false);
+            SaveLastFilePath(_currentFilePath);
+            return true;
         }
         catch (JsonReaderException ex)
         {
@@ -178,6 +189,8 @@ public partial class MainViewModel : ObservableObject
         {
             MessageBox.Show($"Could not read file: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
         }
+
+        return false;
     }
 
     private void SaveFile()
@@ -203,6 +216,7 @@ public partial class MainViewModel : ObservableObject
         {
             _currentFilePath = dialog.FileName;
             TryWriteFile(dialog.FileName);
+            SaveLastFilePath(_currentFilePath);
         }
     }
 
@@ -213,6 +227,7 @@ public partial class MainViewModel : ObservableObject
             FormatJson();
             File.WriteAllText(path, RawJsonText, Encoding.UTF8);
             MarkUnsaved(false);
+            SaveLastFilePath(path);
         }
         catch (IOException ex)
         {
@@ -221,6 +236,59 @@ public partial class MainViewModel : ObservableObject
         catch (JsonReaderException ex)
         {
             MessageBox.Show($"JSON is invalid: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+    }
+
+    private bool TryLoadLastOpenedFile()
+    {
+        var lastFilePath = ReadLastFilePath();
+        if (string.IsNullOrWhiteSpace(lastFilePath) || !File.Exists(lastFilePath))
+        {
+            return false;
+        }
+
+        return LoadFileFromPath(lastFilePath);
+    }
+
+    private static string? ReadLastFilePath()
+    {
+        try
+        {
+            if (File.Exists(LastFileRecordPath))
+            {
+                var content = File.ReadAllText(LastFileRecordPath).Trim();
+                return string.IsNullOrWhiteSpace(content) ? null : content;
+            }
+        }
+        catch
+        {
+            // Ignore errors reading persisted state and fall back to default document.
+        }
+
+        return null;
+    }
+
+    private static void SaveLastFilePath(string? path)
+    {
+        try
+        {
+            Directory.CreateDirectory(StateDirectory);
+
+            if (string.IsNullOrWhiteSpace(path))
+            {
+                if (File.Exists(LastFileRecordPath))
+                {
+                    File.Delete(LastFileRecordPath);
+                }
+
+                return;
+            }
+
+            File.WriteAllText(LastFileRecordPath, path);
+        }
+        catch
+        {
+            // Ignore errors persisting the last file path; do not block app usage.
         }
     }
 
