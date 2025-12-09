@@ -188,7 +188,7 @@
                                 FontFamily="Consolas"
                                 HorizontalScrollBarVisibility="Auto"
                                 MinHeight="120"
-                                Text="{Binding SelectedNode.EditableValue, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+                                Text="{Binding SelectedNode.EditableValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                 TextWrapping="NoWrap"
                                 VerticalScrollBarVisibility="Auto">
                                 <TextBox.Style>
@@ -202,7 +202,7 @@
                                     </Style>
                                 </TextBox.Style>
                             </TextBox>
-                            <CheckBox Content="True/False" IsChecked="{Binding SelectedNode.BooleanValue, Mode=OneWay}">
+                            <CheckBox Content="True/False" IsChecked="{Binding SelectedNode.BooleanValue, Mode=TwoWay}">
                                 <CheckBox.Style>
                                     <Style TargetType="CheckBox">
                                         <Setter Property="Visibility" Value="Collapsed" />
