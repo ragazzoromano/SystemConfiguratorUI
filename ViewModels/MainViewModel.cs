@@ -370,10 +370,15 @@ public partial class MainViewModel : ObservableObject
             _jsonRoot = ParseJsonWithLineInfo(RawJsonText);
             RebuildTree();
         }
-        catch (JsonReaderException ex)
+        catch (JsonException ex)
         {
             MessageBox.Show($"Failed to parse JSON: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             // Keep the existing tree if parsing fails
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"Unexpected error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            // Keep the existing tree if an unexpected error occurs
         }
     }
 
