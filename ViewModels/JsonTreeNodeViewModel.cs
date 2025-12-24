@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Text;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Newtonsoft.Json;
@@ -55,9 +56,15 @@ public class JsonTreeNodeViewModel : ObservableObject
                 return value.Value?.ToString() ?? "null";
             }
 
-            if (Token is JObject)
+            if (Token is JObject obj)
             {
-                return "{ }";
+                // Show first few properties - cache properties to avoid multiple enumerations
+                var properties = obj.Properties().ToList();
+                var props = properties.Take(3).Select(p => p.Name);
+                var preview = string.Join(", ", props);
+                if (properties.Count > 3)
+                    preview += "...";
+                return properties.Count > 0 ? $"{{ {preview} }}" : "{ }";
             }
 
             if (Token is JArray array)
@@ -66,6 +73,23 @@ public class JsonTreeNodeViewModel : ObservableObject
             }
 
             return Token.Type.ToString();
+        }
+    }
+
+    public string NodeTypeIcon
+    {
+        get
+        {
+            return Token.Type switch
+            {
+                JTokenType.Object => "\uE8F1",      // FolderFill
+                JTokenType.Array => "\uE8FD",       // BulletedList
+                JTokenType.String => "\uE8E9",      // Font
+                JTokenType.Integer => "\uE8EF",     // Calculator
+                JTokenType.Float => "\uE8EF",       // Calculator
+                JTokenType.Boolean => "\uE8FB",     // CheckboxComposite
+                _ => "\uE91F"                       // Dot
+            };
         }
     }
 

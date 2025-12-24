@@ -27,6 +27,7 @@ public partial class MainViewModel : ObservableObject
     private bool _hasUnsavedChanges;
     private readonly List<JsonTreeNodeViewModel> _searchMatches = new();
     private int _searchIndex = -1;
+    private bool _isUpdatingFromTree = false;
 
     public ObservableCollection<JsonTreeNodeViewModel> RootNodes { get; } = new();
 
@@ -401,9 +402,19 @@ public partial class MainViewModel : ObservableObject
 
     private void HandleNodeUpdated()
     {
-        RawJsonText = _jsonRoot.ToString(Formatting.Indented);
-        MarkUnsaved(true);
-        RecalculateSearchMatches();
+        if (_isUpdatingFromTree) return;
+        
+        _isUpdatingFromTree = true;
+        try
+        {
+            RawJsonText = _jsonRoot.ToString(Formatting.Indented);
+            MarkUnsaved(true);
+            RecalculateSearchMatches();
+        }
+        finally
+        {
+            _isUpdatingFromTree = false;
+        }
     }
 
     private static void ExpandAncestors(JsonTreeNodeViewModel node)

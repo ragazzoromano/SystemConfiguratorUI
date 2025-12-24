@@ -101,7 +101,23 @@
                     <TreeView.Resources>
                         <HierarchicalDataTemplate DataType="{x:Type vm:JsonTreeNodeViewModel}" ItemsSource="{Binding Children}">
                             <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="{Binding DisplayName}" />
+                                <StackPanel.ToolTip>
+                                    <ToolTip>
+                                        <StackPanel>
+                                            <TextBlock FontWeight="Bold" Text="{Binding Name}" />
+                                            <TextBlock Text="{Binding NodeType}" Foreground="Gray" />
+                                            <TextBlock Text="{Binding DisplayValue}" MaxWidth="400" TextWrapping="Wrap" />
+                                        </StackPanel>
+                                    </ToolTip>
+                                </StackPanel.ToolTip>
+                                
+                                <TextBlock Text="{Binding NodeTypeIcon}" 
+                                           FontFamily="Segoe MDL2 Assets" 
+                                           Margin="0,0,4,0" 
+                                           Foreground="#FF666666"
+                                           AutomationProperties.Name="{Binding NodeType}" />
+                                
+                                <TextBlock Text="{Binding DisplayName}" FontWeight="SemiBold" />
                                 <TextBlock Text=": " />
                                 <TextBlock Foreground="Gray" Text="{Binding DisplayValue}" />
                             </StackPanel>
