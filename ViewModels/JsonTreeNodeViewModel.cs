@@ -78,7 +78,7 @@ public class JsonTreeNodeViewModel : ObservableObject
                     }
                     else if (identifierValue.Type == JTokenType.Boolean)
                     {
-                        formattedValue = identifierValue.Value!.ToString()!.ToLowerInvariant();
+                        formattedValue = (identifierValue.Value?.ToString() ?? "false").ToLowerInvariant();
                     }
                     else if (identifierValue.Type == JTokenType.Null)
                     {
@@ -90,7 +90,7 @@ public class JsonTreeNodeViewModel : ObservableObject
                         var idValue = identifierValue.Value;
                         if (idValue != null)
                         {
-                            formattedValue = idValue.ToString()!;
+                            formattedValue = idValue.ToString();
                         }
                     }
                     
