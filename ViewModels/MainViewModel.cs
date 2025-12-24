@@ -342,6 +342,12 @@ public partial class MainViewModel : ObservableObject
 
     private void RebuildTree()
     {
+        // Unsubscribe from old nodes to prevent memory leaks
+        foreach (var node in RootNodes.SelectMany(n => n.Flatten()))
+        {
+            node.ValueChanged = null;
+        }
+
         RootNodes.Clear();
         foreach (var child in BuildNodes(_jsonRoot, null))
         {
@@ -359,8 +365,16 @@ public partial class MainViewModel : ObservableObject
 
     private void RebuildTreeWithLineInfo()
     {
-        _jsonRoot = ParseJsonWithLineInfo(RawJsonText);
-        RebuildTree();
+        try
+        {
+            _jsonRoot = ParseJsonWithLineInfo(RawJsonText);
+            RebuildTree();
+        }
+        catch (JsonReaderException ex)
+        {
+            MessageBox.Show($"Failed to parse JSON: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            // Keep the existing tree if parsing fails
+        }
     }
 
     private IEnumerable<JsonTreeNodeViewModel> BuildNodes(JToken token, JsonTreeNodeViewModel? parent)

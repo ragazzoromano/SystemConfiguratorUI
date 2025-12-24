@@ -1,6 +1,6 @@
 # SystemConfiguratorUI
 
-A WPF desktop JSON editor focused on navigating and editing large `configuration.json` files. The app is built on .NET 10 with the MVVM pattern and provides a consistent experience for working with nested JSON structures.
+A WPF desktop JSON editor focused on navigating and editing large `configuration.json` files. The app is built on .NET 8 with the MVVM pattern and provides a consistent experience for working with nested JSON structures.
 
 ## Features
 
@@ -17,7 +17,7 @@ SystemConfiguratorUI is intended to streamline work with sprawling configuration
 
 ## Prerequisites
 
-- `.NET 6` SDK installed on Windows.
+- `.NET 8.0` SDK or later installed on Windows.
 - Ability to run WPF applications (Windows 10 or later recommended).
 
 ## Development Notes
