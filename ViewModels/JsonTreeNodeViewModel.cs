@@ -11,6 +11,8 @@ namespace SystemConfiguratorUI.ViewModels;
 
 public class JsonTreeNodeViewModel : ObservableObject
 {
+    private static readonly string[] Identifiers = { "name", "id", "alias", "title", "key" };
+
     public JsonTreeNodeViewModel(string name, JToken token, JsonTreeNodeViewModel? parent)
     {
         Name = name;
@@ -58,8 +60,62 @@ public class JsonTreeNodeViewModel : ObservableObject
 
             if (Token is JObject obj)
             {
-                // Show first few properties - cache properties to avoid multiple enumerations
+                // Cache properties to avoid multiple enumerations
                 var properties = obj.Properties().ToList();
+                
+                // Check for common identifier properties first (in priority order)
+                JProperty? identifierProp = null;
+                foreach (var id in Identifiers)
+                {
+                    identifierProp = properties.FirstOrDefault(p => p.Name.Equals(id, StringComparison.OrdinalIgnoreCase));
+                    if (identifierProp != null)
+                        break;
+                }
+                
+                if (identifierProp != null && identifierProp.Value is JValue identifierValue)
+                {
+                    // Format the value appropriately based on type
+                    string? formattedValue = null;
+                    if (identifierValue.Type == JTokenType.String)
+                    {
+                        var idValue = identifierValue.Value?.ToString();
+                        if (!string.IsNullOrEmpty(idValue))
+                        {
+                            formattedValue = $"\"{idValue}\"";
+                        }
+                        // Empty string - fall through to show property list
+                    }
+                    else if (identifierValue.Type == JTokenType.Boolean)
+                    {
+                        var boolValue = identifierValue.Value;
+                        if (boolValue != null)
+                        {
+                            formattedValue = boolValue.ToString().ToLowerInvariant();
+                        }
+                        // If null, fall through to show property list
+                    }
+                    else if (identifierValue.Type == JTokenType.Null)
+                    {
+                        formattedValue = "null";
+                    }
+                    else
+                    {
+                        // Numbers and other types - no quotes
+                        var idValue = identifierValue.Value;
+                        if (idValue != null)
+                        {
+                            formattedValue = idValue.ToString();
+                        }
+                    }
+                    
+                    if (formattedValue != null)
+                    {
+                        // Show: { name: "John Doe" } or { id: 123 } etc.
+                        return $"{{ {identifierProp.Name}: {formattedValue} }}";
+                    }
+                }
+                
+                // Fallback to property preview
                 var props = properties.Take(3).Select(p => p.Name);
                 var preview = string.Join(", ", props);
                 if (properties.Count > 3)
