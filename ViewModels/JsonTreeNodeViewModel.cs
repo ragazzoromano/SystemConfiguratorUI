@@ -11,8 +11,7 @@ namespace SystemConfiguratorUI.ViewModels;
 
 public class JsonTreeNodeViewModel : ObservableObject
 {
-    private static readonly HashSet<string> Identifiers = new(StringComparer.OrdinalIgnoreCase) 
-        { "name", "id", "alias", "title", "key" };
+    private static readonly string[] Identifiers = { "name", "id", "alias", "title", "key" };
 
     public JsonTreeNodeViewModel(string name, JToken token, JsonTreeNodeViewModel? parent)
     {
@@ -61,9 +60,13 @@ public class JsonTreeNodeViewModel : ObservableObject
 
             if (Token is JObject obj)
             {
-                // Check for common identifier properties first
-                var identifierProp = obj.Properties()
-                    .FirstOrDefault(p => Identifiers.Contains(p.Name));
+                // Cache properties to avoid multiple enumerations
+                var properties = obj.Properties().ToList();
+                
+                // Check for common identifier properties first (in priority order)
+                var identifierProp = Identifiers
+                    .Select(id => properties.FirstOrDefault(p => p.Name.Equals(id, StringComparison.OrdinalIgnoreCase)))
+                    .FirstOrDefault(p => p != null);
                 
                 if (identifierProp != null && identifierProp.Value is JValue identifierValue)
                 {
@@ -80,10 +83,9 @@ public class JsonTreeNodeViewModel : ObservableObject
                     }
                     else if (identifierValue.Type == JTokenType.Boolean)
                     {
-                        var boolValue = identifierValue.Value;
-                        if (boolValue != null)
+                        if (identifierValue.Value != null)
                         {
-                            formattedValue = boolValue.ToString()!.ToLowerInvariant();
+                            formattedValue = identifierValue.Value.ToString().ToLowerInvariant();
                         }
                         // If null, fall through to show property list
                     }
@@ -109,7 +111,6 @@ public class JsonTreeNodeViewModel : ObservableObject
                 }
                 
                 // Fallback to property preview
-                var properties = obj.Properties().ToList();
                 var props = properties.Take(3).Select(p => p.Name);
                 var preview = string.Join(", ", props);
                 if (properties.Count > 3)
