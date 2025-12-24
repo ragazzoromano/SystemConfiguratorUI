@@ -34,6 +34,13 @@ public partial class MainWindow : Window
         if (DataContext is MainViewModel vm && !vm.ConfirmClose())
         {
             e.Cancel = true;
+            return;
+        }
+
+        // Clean up event subscriptions to prevent memory leaks
+        if (_rawJsonScrollViewer != null)
+        {
+            _rawJsonScrollViewer.ScrollChanged -= RawJsonScrollViewer_ScrollChanged;
         }
     }
 
