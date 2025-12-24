@@ -58,12 +58,13 @@ public class JsonTreeNodeViewModel : ObservableObject
 
             if (Token is JObject obj)
             {
-                // Show first few properties
-                var props = obj.Properties().Take(3).Select(p => p.Name);
+                // Show first few properties - cache properties to avoid multiple enumerations
+                var properties = obj.Properties().ToList();
+                var props = properties.Take(3).Select(p => p.Name);
                 var preview = string.Join(", ", props);
-                if (obj.Properties().Count() > 3)
+                if (properties.Count > 3)
                     preview += "...";
-                return obj.Properties().Any() ? $"{{ {preview} }}" : "{ }";
+                return properties.Count > 0 ? $"{{ {preview} }}" : "{ }";
             }
 
             if (Token is JArray array)
