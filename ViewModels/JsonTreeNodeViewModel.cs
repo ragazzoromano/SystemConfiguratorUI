@@ -64,9 +64,13 @@ public class JsonTreeNodeViewModel : ObservableObject
                 var properties = obj.Properties().ToList();
                 
                 // Check for common identifier properties first (in priority order)
-                var identifierProp = Identifiers
-                    .Select(id => properties.FirstOrDefault(p => p.Name.Equals(id, StringComparison.OrdinalIgnoreCase)))
-                    .FirstOrDefault(p => p != null);
+                JProperty? identifierProp = null;
+                foreach (var id in Identifiers)
+                {
+                    identifierProp = properties.FirstOrDefault(p => p.Name.Equals(id, StringComparison.OrdinalIgnoreCase));
+                    if (identifierProp != null)
+                        break;
+                }
                 
                 if (identifierProp != null && identifierProp.Value is JValue identifierValue)
                 {
@@ -83,9 +87,10 @@ public class JsonTreeNodeViewModel : ObservableObject
                     }
                     else if (identifierValue.Type == JTokenType.Boolean)
                     {
-                        if (identifierValue.Value != null)
+                        var boolValue = identifierValue.Value;
+                        if (boolValue != null)
                         {
-                            formattedValue = identifierValue.Value.ToString().ToLowerInvariant();
+                            formattedValue = boolValue.ToString().ToLowerInvariant();
                         }
                         // If null, fall through to show property list
                     }
