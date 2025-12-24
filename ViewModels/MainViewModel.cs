@@ -475,12 +475,6 @@ public partial class MainViewModel : ObservableObject
             }
         }
 
-        if (_searchMatches.Count > 0)
-        {
-            _searchIndex = 0;
-            SelectedNode = _searchMatches[_searchIndex];
-        }
-
         UpdateSearchStatus();
     }
 
@@ -489,6 +483,10 @@ public partial class MainViewModel : ObservableObject
         if (_searchMatches.Count == 0)
         {
             SearchStatus = "0/0";
+        }
+        else if (_searchIndex < 0)
+        {
+            SearchStatus = $"0/{_searchMatches.Count}";
         }
         else
         {
@@ -503,7 +501,15 @@ public partial class MainViewModel : ObservableObject
             return;
         }
 
-        _searchIndex = (_searchIndex + 1) % _searchMatches.Count;
+        if (_searchIndex < 0)
+        {
+            _searchIndex = 0;
+        }
+        else
+        {
+            _searchIndex = (_searchIndex + 1) % _searchMatches.Count;
+        }
+        
         SelectedNode = _searchMatches[_searchIndex];
         UpdateSearchStatus();
     }
@@ -515,7 +521,15 @@ public partial class MainViewModel : ObservableObject
             return;
         }
 
-        _searchIndex = (_searchIndex - 1 + _searchMatches.Count) % _searchMatches.Count;
+        if (_searchIndex < 0)
+        {
+            _searchIndex = _searchMatches.Count - 1;
+        }
+        else
+        {
+            _searchIndex = (_searchIndex - 1 + _searchMatches.Count) % _searchMatches.Count;
+        }
+        
         SelectedNode = _searchMatches[_searchIndex];
         UpdateSearchStatus();
     }
