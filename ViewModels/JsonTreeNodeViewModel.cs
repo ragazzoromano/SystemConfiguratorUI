@@ -81,7 +81,11 @@ public class JsonTreeNodeViewModel : ObservableObject
                     else if (identifierValue.Type == JTokenType.Boolean)
                     {
                         var boolValue = identifierValue.Value;
-                        formattedValue = boolValue?.ToString()?.ToLowerInvariant() ?? "false";
+                        if (boolValue != null)
+                        {
+                            formattedValue = boolValue.ToString()!.ToLowerInvariant();
+                        }
+                        // If null, fall through to show property list
                     }
                     else if (identifierValue.Type == JTokenType.Null)
                     {
