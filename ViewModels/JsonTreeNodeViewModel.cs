@@ -58,7 +58,22 @@ public class JsonTreeNodeViewModel : ObservableObject
 
             if (Token is JObject obj)
             {
-                // Show first few properties - cache properties to avoid multiple enumerations
+                // Check for common identifier properties first
+                var identifiers = new[] { "name", "id", "alias", "title", "key" };
+                var identifierProp = obj.Properties()
+                    .FirstOrDefault(p => identifiers.Contains(p.Name.ToLowerInvariant()));
+                
+                if (identifierProp != null && identifierProp.Value is JValue identifierValue)
+                {
+                    var idValueStr = identifierValue.Value?.ToString();
+                    if (!string.IsNullOrWhiteSpace(idValueStr))
+                    {
+                        // Show: { name: "John Doe" } or { id: "123" } etc.
+                        return $"{{ {identifierProp.Name}: \"{idValueStr}\" }}";
+                    }
+                }
+                
+                // Fallback to property preview
                 var properties = obj.Properties().ToList();
                 var props = properties.Take(3).Select(p => p.Name);
                 var preview = string.Join(", ", props);
