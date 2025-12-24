@@ -373,7 +373,13 @@ public partial class MainViewModel : ObservableObject
                 {
                     ValueChanged = HandleNodeUpdated
                 };
-                node.Children = new ObservableCollection<JsonTreeNodeViewModel>(BuildNodes(property.Value, node));
+                
+                // Only add children for complex types, not primitive values
+                if (property.Value is JObject or JArray)
+                {
+                    node.Children = new ObservableCollection<JsonTreeNodeViewModel>(BuildNodes(property.Value, node));
+                }
+                
                 yield return node;
             }
         }
@@ -387,16 +393,15 @@ public partial class MainViewModel : ObservableObject
                 {
                     ValueChanged = HandleNodeUpdated
                 };
-                node.Children = new ObservableCollection<JsonTreeNodeViewModel>(BuildNodes(item, node));
+                
+                // Only add children for complex types, not primitive values
+                if (item is JObject or JArray)
+                {
+                    node.Children = new ObservableCollection<JsonTreeNodeViewModel>(BuildNodes(item, node));
+                }
+                
                 yield return node;
             }
-        }
-        else
-        {
-            yield return new JsonTreeNodeViewModel(parent?.Name ?? "root", token, parent)
-            {
-                ValueChanged = HandleNodeUpdated
-            };
         }
     }
 
