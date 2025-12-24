@@ -65,11 +65,39 @@ public class JsonTreeNodeViewModel : ObservableObject
                 
                 if (identifierProp != null && identifierProp.Value is JValue identifierValue)
                 {
-                    var idValueStr = identifierValue.Value?.ToString();
-                    if (!string.IsNullOrWhiteSpace(idValueStr))
+                    // Format the value appropriately based on type
+                    string? formattedValue = null;
+                    if (identifierValue.Type == JTokenType.String)
                     {
-                        // Show: { name: "John Doe" } or { id: "123" } etc.
-                        return $"{{ {identifierProp.Name}: \"{idValueStr}\" }}";
+                        var idValue = identifierValue.Value?.ToString();
+                        if (!string.IsNullOrEmpty(idValue))
+                        {
+                            formattedValue = $"\"{idValue}\"";
+                        }
+                        // Empty string - fall through to show property list
+                    }
+                    else if (identifierValue.Type == JTokenType.Boolean)
+                    {
+                        formattedValue = identifierValue.Value!.ToString()!.ToLowerInvariant();
+                    }
+                    else if (identifierValue.Type == JTokenType.Null)
+                    {
+                        formattedValue = "null";
+                    }
+                    else
+                    {
+                        // Numbers and other types - no quotes
+                        var idValue = identifierValue.Value;
+                        if (idValue != null)
+                        {
+                            formattedValue = idValue.ToString()!;
+                        }
+                    }
+                    
+                    if (formattedValue != null)
+                    {
+                        // Show: { name: "John Doe" } or { id: 123 } etc.
+                        return $"{{ {identifierProp.Name}: {formattedValue} }}";
                     }
                 }
                 
