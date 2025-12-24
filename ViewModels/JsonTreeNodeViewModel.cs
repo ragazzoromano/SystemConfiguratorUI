@@ -11,7 +11,8 @@ namespace SystemConfiguratorUI.ViewModels;
 
 public class JsonTreeNodeViewModel : ObservableObject
 {
-    private static readonly string[] Identifiers = { "name", "id", "alias", "title", "key" };
+    private static readonly HashSet<string> Identifiers = new(StringComparer.OrdinalIgnoreCase) 
+        { "name", "id", "alias", "title", "key" };
 
     public JsonTreeNodeViewModel(string name, JToken token, JsonTreeNodeViewModel? parent)
     {
@@ -62,7 +63,7 @@ public class JsonTreeNodeViewModel : ObservableObject
             {
                 // Check for common identifier properties first
                 var identifierProp = obj.Properties()
-                    .FirstOrDefault(p => Identifiers.Contains(p.Name.ToLowerInvariant()));
+                    .FirstOrDefault(p => Identifiers.Contains(p.Name));
                 
                 if (identifierProp != null && identifierProp.Value is JValue identifierValue)
                 {
@@ -80,8 +81,7 @@ public class JsonTreeNodeViewModel : ObservableObject
                     else if (identifierValue.Type == JTokenType.Boolean)
                     {
                         var boolValue = identifierValue.Value;
-                        // Boolean values should never be null at this point, but be defensive
-                        formattedValue = boolValue != null ? boolValue.ToString()!.ToLowerInvariant() : "false";
+                        formattedValue = boolValue?.ToString()?.ToLowerInvariant() ?? "false";
                     }
                     else if (identifierValue.Type == JTokenType.Null)
                     {
